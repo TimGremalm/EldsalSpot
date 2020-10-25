@@ -7,12 +7,6 @@
 // #include <DMXSerial.h>
 #endif
 
-// 0-10V light control signals
-const int pinRoofLevel = A0;
-const int pinRoofMode = A1;
-const int pinSpotsLevel = A2;
-const int pinSpotsMode = A3;
-
 // Parcan channels
 const uint8_t spotDmxChannelRed = 1;
 const uint8_t spotDmxChannelGreen = 2;
@@ -25,6 +19,13 @@ const uint8_t spotDmxChannelStrobe = 6;
 const uint8_t roofNumberOfParcans = 6;
 const uint8_t spotsNumberOfSpots = 4;
 
+// 0-10V light control signals
+const int pinRoofLevel = A0;
+const int pinRoofMode = A1;
+const int pinSpotsLevel = A2;
+const int pinSpotsMode = A3;
+
+// Mode parameters
 const uint16_t modeSteps = 8;
 const uint16_t modeStep = 1024 / modeSteps;
 const uint16_t modeDiffLatch = modeStep / 2;
@@ -99,9 +100,6 @@ void checkLevels() {
 void tick() {
 	#ifndef USE_PRINT
 	DMXSerial.write(1, smokeLevel);
-	#endif
-
-	#ifdef USE_PRINT
 	#endif
 
 	pixels.setPixelColor(0, pixels.Color(150, 0, 0));
