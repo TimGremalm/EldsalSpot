@@ -1,4 +1,5 @@
 #include <Adafruit_NeoPixel.h>
+#include "hsl_rgb.h"
 
 // The serial port is used for DMX transmit normally. If you want debug-print define USE_PRINT.
 #define USE_PRINT
@@ -18,6 +19,10 @@ const uint8_t spotDmxChannelStrobe = 6;
 // Number of par cans
 const uint8_t roofNumberOfParcans = 6;
 const uint8_t spotsNumberOfSpots = 4;
+
+// Pixel buffer
+rgbw_t grbwPixels[roofNumberOfParcans + spotsNumberOfSpots];
+//rgbw_t grbwPixels[10];
 
 // 0-10V light control signals
 const int pinRoofLevel = A0;
@@ -49,6 +54,7 @@ void setup() {
 	DMXSerial.init(DMXController);
 	#endif
 	pixels.begin();
+	memset(grbwPixels, 0, sizeof(rgbw_t) * (roofNumberOfParcans + spotsNumberOfSpots));
 }
 
 void checkLevels() {
@@ -102,7 +108,18 @@ void tick() {
 	DMXSerial.write(1, smokeLevel);
 	#endif
 
-	pixels.setPixelColor(0, pixels.Color(150, 0, 0));
+	grbwPixels[0] = hslToRgb(0.0, 1.0, 0.4);
+	grbwPixels[1] = hslToRgb(0.1, 1.0, 0.4);
+	grbwPixels[2] = hslToRgb(0.2, 1.0, 0.4);
+	grbwPixels[3] = hslToRgb(0.3, 1.0, 0.4);
+	grbwPixels[4] = hslToRgb(0.4, 1.0, 0.4);
+	fillWs2812(grbwPixels);
+}
+
+void fillWs2812(rgbw_t *pixelbuffer) {
+	for (uint32_t i = 0; i < (roofNumberOfParcans + spotsNumberOfSpots); i++) {
+		pixels.setPixelColor(i, pixelbuffer[i].color);
+	}
 	pixels.show();
 }
 
