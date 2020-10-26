@@ -43,12 +43,4 @@ rgbw_t hslToRgb(float h, float s, float l) {
 	pixel.blue = (int) (b * 255);
 	pixel.white = 0;
 	return pixel;
-	/*
-	rgbw_t out;
-	out = *(rgbw_t *) pixel;
-	out.r = (int) (r * 255);
-	out.g = (int) (g * 255);
-	out.b = (int) (b * 255);
-	out.w = 0;
-	*/
 }

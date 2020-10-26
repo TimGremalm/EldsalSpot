@@ -1,5 +1,6 @@
 #include <Adafruit_NeoPixel.h>
 #include "hsl_rgb.h"
+#include "effects.h"
 
 // The serial port is used for DMX transmit normally. If you want debug-print define USE_PRINT.
 #define USE_PRINT
@@ -108,11 +109,7 @@ void tick() {
 	DMXSerial.write(1, smokeLevel);
 	#endif
 
-	grbwPixels[0] = hslToRgb(0.0, 1.0, 0.4);
-	grbwPixels[1] = hslToRgb(0.1, 1.0, 0.4);
-	grbwPixels[2] = hslToRgb(0.2, 1.0, 0.4);
-	grbwPixels[3] = hslToRgb(0.3, 1.0, 0.4);
-	grbwPixels[4] = hslToRgb(0.4, 1.0, 0.4);
+	fade(grbwPixels, 0, roofNumberOfParcans, 0.3);
 	fillWs2812(grbwPixels);
 }
 
