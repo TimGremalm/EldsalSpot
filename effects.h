@@ -7,7 +7,7 @@ extern "C" {
 
 #include "hsl_rgb.h"
 
-void fade(rgbw_t *pixelbuffer, uint8_t start, uint8_t length, float hue);
+void fade(rgbw_t *pixelbuffer, uint8_t start, uint8_t length, float hue, float range, uint16_t fadetime);
 
 #endif  // __EFFECTS__
 

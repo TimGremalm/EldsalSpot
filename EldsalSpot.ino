@@ -109,7 +109,7 @@ void tick() {
 	DMXSerial.write(1, smokeLevel);
 	#endif
 
-	fade(grbwPixels, 0, roofNumberOfParcans, 0.3);
+	fade(grbwPixels, 0, roofNumberOfParcans, 0.3, 0.2, 10000);
 	fillWs2812(grbwPixels);
 }
 
