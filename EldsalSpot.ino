@@ -32,12 +32,33 @@ const int pinSpotsLevel = A2;
 const int pinSpotsMode = A3;
 
 // Mode parameters
-const uint16_t modeSteps = 8;
+const uint16_t modeSteps = 24;
 const uint16_t modeStep = 1024 / modeSteps;
 const uint16_t modeDiffLatch = modeStep / 2;
 typedef enum {
+	LIGHT_FADE_WHITE = 0,
+	LIGHT_FADE_RED,
+	LIGHT_FADE_MAGENTA,
+	LIGHT_FADE_BLUE,
+	LIGHT_FADE_CYAN,
+	LIGHT_FADE_GREEN,
+	LIGHT_FADE_YELLOW,
+	LIGHT_FADE_MAGENTA_BLUE,
+	LIGHT_FADE_YELLOW_RED,
+	LIGHT_FADE_CYAN_YELLOW,
+	LIGHT_RAINBOW_SLOW,
+	LIGHT_RAINBOW_FAST,
+	LIGHT_POLKA,
+	LIGHT_CANDY,
+	LIGHT_FIRE_SLOW,
+	LIGHT_FIRE_FAST,
+	LIGHT_PAR_FLASH_RED,
+	LIGHT_PAR_FLASH_MAGENTA,
+	LIGHT_PAR_FLASH_BLUE,
+	LIGHT_PAR_FLASH_CYAN,
+	LIGHT_PAR_FLASH_GREEN,
+	LIGHT_PAR_FLASH_YELLOW,
 	LIGHT_START = 255,
-	LIGHT_GLITCH = 1,
 } light_mode_t;
 
 float roofLevel = 0;
@@ -109,7 +130,36 @@ void tick() {
 	DMXSerial.write(1, smokeLevel);
 	#endif
 
-	fade(grbwPixels, 0, roofNumberOfParcans, 0.3, 0.2, 10000);
+	switch (roofMode) {
+		case LIGHT_START:
+		case LIGHT_FADE_RED:
+			fade(grbwPixels, 0, roofNumberOfParcans, 0.98, 0.03, 10000);
+			break;
+		case LIGHT_FADE_MAGENTA:
+			fade(grbwPixels, 0, roofNumberOfParcans, 0.80, 0.10, 10000);
+			break;
+		case LIGHT_FADE_BLUE:
+			fade(grbwPixels, 0, roofNumberOfParcans, 0.60, 0.05, 10000);
+			break;
+		case LIGHT_FADE_CYAN:
+			fade(grbwPixels, 0, roofNumberOfParcans, 0.40, 0.10, 10000);
+			break;
+		case LIGHT_FADE_GREEN:
+			fade(grbwPixels, 0, roofNumberOfParcans, 0.30, 0.05, 10000);
+			break;
+		case LIGHT_FADE_YELLOW:
+			fade(grbwPixels, 0, roofNumberOfParcans, 0.10, 0.05, 10000);
+			break;
+		case LIGHT_FADE_YELLOW_RED:
+			fade(grbwPixels, 0, roofNumberOfParcans, 0.00, 0.10, 10000);
+			break;
+		case LIGHT_FADE_CYAN_YELLOW:
+			fade(grbwPixels, 0, roofNumberOfParcans, 0.85, 0.25, 10000);
+			break;
+		case LIGHT_FADE_MAGENTA_BLUE:
+			fade(grbwPixels, 0, roofNumberOfParcans, 0.65, 0.25, 10000);
+			break;
+	}	
 	fillWs2812(grbwPixels);
 }
 
