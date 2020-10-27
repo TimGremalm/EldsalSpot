@@ -35,31 +35,6 @@ const int pinSpotsMode = A3;
 const uint16_t modeSteps = 24;
 const uint16_t modeStep = 1024 / modeSteps;
 const uint16_t modeDiffLatch = modeStep / 2;
-typedef enum {
-	LIGHT_FADE_WHITE = 0,
-	LIGHT_FADE_RED,
-	LIGHT_FADE_MAGENTA,
-	LIGHT_FADE_BLUE,
-	LIGHT_FADE_CYAN,
-	LIGHT_FADE_GREEN,
-	LIGHT_FADE_YELLOW,
-	LIGHT_FADE_MAGENTA_BLUE,
-	LIGHT_FADE_YELLOW_RED,
-	LIGHT_FADE_CYAN_YELLOW,
-	LIGHT_RAINBOW_SLOW,
-	LIGHT_RAINBOW_FAST,
-	LIGHT_POLKA,
-	LIGHT_CANDY,
-	LIGHT_FIRE_SLOW,
-	LIGHT_FIRE_FAST,
-	LIGHT_PAR_FLASH_RED,
-	LIGHT_PAR_FLASH_MAGENTA,
-	LIGHT_PAR_FLASH_BLUE,
-	LIGHT_PAR_FLASH_CYAN,
-	LIGHT_PAR_FLASH_GREEN,
-	LIGHT_PAR_FLASH_YELLOW,
-	LIGHT_START = 255,
-} light_mode_t;
 
 float roofLevel = 0;
 float spotsLevel = 0;
@@ -93,14 +68,20 @@ void checkLevels() {
 			roofMode = (light_mode_t)(analogRoofMode / (uint16_t)modeStep);
 			#ifdef USE_PRINT
 			Serial.print("Roof new mode up ");
-			Serial.println(roofMode);
+			Serial.print(roofMode);
+			Serial.print(" ");
+			printMode(roofMode);
+			Serial.println(" ");
 			#endif
 		}
 		if (analogRoofMode < ((roofMode * (uint16_t)modeStep) - (modeDiffLatch * 1))) {
 			roofMode = (light_mode_t)(analogRoofMode / (uint16_t)modeStep);
 			#ifdef USE_PRINT
 			Serial.print("Roof new mode down ");
-			Serial.println(roofMode);
+			Serial.print(roofMode);
+			Serial.print(" ");
+			printMode(roofMode);
+			Serial.println(" ");
 			#endif
 		}
 	}
@@ -112,17 +93,51 @@ void checkLevels() {
 			spotsMode = (light_mode_t)(analogSpotsMode / (uint16_t)modeStep);
 			#ifdef USE_PRINT
 			Serial.print("Spots new mode up ");
-			Serial.println(spotsMode);
+			Serial.print(spotsMode);
+			Serial.print(" ");
+			printMode(spotsMode);
+			Serial.println(" ");
 			#endif
 		}
 		if (analogSpotsMode < ((spotsMode * (uint16_t)modeStep) - (modeDiffLatch * 1))) {
 			spotsMode = (light_mode_t)(analogSpotsMode / (uint16_t)modeStep);
 			#ifdef USE_PRINT
 			Serial.print("Spots new mode down ");
-			Serial.println(spotsMode);
+			Serial.print(spotsMode);
+			Serial.print(" ");
+			printMode(spotsMode);
+			Serial.println(" ");
 			#endif
 		}
 	}
+}
+
+void printMode(light_mode_t mode) {
+	switch (mode) {
+		case LIGHT_START: Serial.print("LIGHT_START"); break;
+		case LIGHT_FADE_WHITE: Serial.print("LIGHT_FADE_WHITE"); break;
+		case LIGHT_FADE_RED: Serial.print("LIGHT_FADE_RED"); break;
+		case LIGHT_FADE_MAGENTA: Serial.print("LIGHT_FADE_MAGENTA"); break;
+		case LIGHT_FADE_BLUE: Serial.print("LIGHT_FADE_BLUE"); break;
+		case LIGHT_FADE_CYAN: Serial.print("LIGHT_FADE_CYAN"); break;
+		case LIGHT_FADE_GREEN: Serial.print("LIGHT_FADE_GREEN"); break;
+		case LIGHT_FADE_YELLOW: Serial.print("LIGHT_FADE_YELLOW"); break;
+		case LIGHT_FADE_MAGENTA_BLUE: Serial.print("LIGHT_FADE_MAGENTA_BLUE"); break;
+		case LIGHT_FADE_YELLOW_RED: Serial.print("LIGHT_FADE_YELLOW_RED"); break;
+		case LIGHT_FADE_CYAN_YELLOW: Serial.print("LIGHT_FADE_CYAN_YELLOW"); break;
+		case LIGHT_RAINBOW_SLOW: Serial.print("LIGHT_RAINBOW_SLOW"); break;
+		case LIGHT_RAINBOW_FAST: Serial.print("LIGHT_RAINBOW_FAST"); break;
+		case LIGHT_POLKA: Serial.print("LIGHT_POLKA"); break;
+		case LIGHT_CANDY: Serial.print("LIGHT_CANDY"); break;
+		case LIGHT_FIRE_SLOW: Serial.print("LIGHT_FIRE_SLOW"); break;
+		case LIGHT_FIRE_FAST: Serial.print("LIGHT_FIRE_FAST"); break;
+		case LIGHT_PAR_FLASH_RED: Serial.print("LIGHT_PAR_FLASH_RED"); break;
+		case LIGHT_PAR_FLASH_MAGENTA: Serial.print("LIGHT_PAR_FLASH_MAGENTA"); break;
+		case LIGHT_PAR_FLASH_BLUE: Serial.print("LIGHT_PAR_FLASH_BLUE"); break;
+		case LIGHT_PAR_FLASH_CYAN: Serial.print("LIGHT_PAR_FLASH_CYAN"); break;
+		case LIGHT_PAR_FLASH_GREEN: Serial.print("LIGHT_PAR_FLASH_GREEN"); break;
+		case LIGHT_PAR_FLASH_YELLOW: Serial.print("LIGHT_PAR_FLASH_YELLOW"); break;
+	}	
 }
 
 void tick() {
