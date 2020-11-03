@@ -34,6 +34,7 @@ typedef enum {
 } light_mode_t;
 
 void fade(rgbw_t *pixelbuffer, uint8_t start, uint8_t length, float hue, float range, uint16_t fadetime);
+void fire(rgbw_t *pixelbuffer, uint8_t start, uint8_t length, uint16_t fadetime);
 
 #endif  // __EFFECTS__
 

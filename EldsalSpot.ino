@@ -174,14 +174,39 @@ void tick() {
 		case LIGHT_FADE_MAGENTA_BLUE:
 			fade(grbwPixels, 0, roofNumberOfParcans, 0.65, 0.25, 10000);
 			break;
-	}	
+		case LIGHT_FIRE_SLOW:
+		case LIGHT_FIRE_FAST:
+			fire(grbwPixels, 0, roofNumberOfParcans, 900);
+			break;
+		case LIGHT_FADE_WHITE:
+		case LIGHT_RAINBOW_SLOW:
+		case LIGHT_RAINBOW_FAST:
+		case LIGHT_POLKA:
+		case LIGHT_CANDY:
+		case LIGHT_PAR_FLASH_RED:
+		case LIGHT_PAR_FLASH_MAGENTA:
+		case LIGHT_PAR_FLASH_BLUE:
+		case LIGHT_PAR_FLASH_CYAN:
+		case LIGHT_PAR_FLASH_GREEN:
+		case LIGHT_PAR_FLASH_YELLOW:
+			break;
+	}
 	fillWs2812(grbwPixels);
 }
 
 void fillWs2812(rgbw_t *pixelbuffer) {
 	for (uint32_t i = 0; i < (roofNumberOfParcans + spotsNumberOfSpots); i++) {
 		pixels.setPixelColor(i, pixelbuffer[i].color);
+		/*
+		Serial.print(pixelbuffer[i].red);
+		Serial.print(",");
+		Serial.print(pixelbuffer[i].green);
+		Serial.print(",");
+		Serial.print(pixelbuffer[i].blue);
+		Serial.print(" ");
+		*/
 	}
+	//Serial.println(" ");
 	pixels.show();
 }
 
