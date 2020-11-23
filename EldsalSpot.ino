@@ -10,6 +10,8 @@
 #endif
 
 // Parcan channels
+const uint8_t spotDmxChannelStart = 1;
+const uint8_t spotDmxChannels = 6;
 const uint8_t spotDmxChannelRed = 1;
 const uint8_t spotDmxChannelGreen = 2;
 const uint8_t spotDmxChannelBlue = 3;
