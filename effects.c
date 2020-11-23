@@ -1,6 +1,7 @@
 #include "effects.h"
 #include "hsl_rgb.h"
 #include <Arduino.h>
+#include <math.h>
 
 void fade(rgbw_t *pixelbuffer, uint8_t start, uint8_t length, float hue, float range, uint16_t fadetime) {
 	unsigned long now = millis();
@@ -24,8 +25,8 @@ typedef struct {
 	uint16_t msLengthTemperature;
 	uint16_t msLengthBlack;
 	float temperatureHue;
-	uint8_t pxStart;
-	uint8_t pxLength;
+	float segmentStart;
+	float segmentRadius;
 } firesegment_t;
 
 firesegment_t segments[1];
@@ -34,80 +35,85 @@ uint16_t randomMinMax(uint16_t min, uint16_t max) {
 	return min + (rand() % (max+1-min));
 }
 
-firesegment_t randomFireSeg(uint8_t length, uint16_t fadetime) {
+firesegment_t randomFireSeg(uint16_t fadetime) {
 	firesegment_t out;
 	out.msStart = millis();
 	out.msLengthTemperature = randomMinMax(300, fadetime);
 	out.msLengthBlack = randomMinMax(100, fadetime);
-	out.temperatureHue = ((float)randomMinMax(1, 9)) / 100;
-	// Avoid px if it's occupied ???
-	out.pxStart = randomMinMax(0, length-1);
-	out.pxLength = randomMinMax(1, 3);
+	out.temperatureHue = ((float)randomMinMax(1, 7)) / 100;  // 1-7%
+	out.segmentStart = ((float)randomMinMax(0, 100)) / 100;  // 0-100%;
+	out.segmentRadius = ((float)randomMinMax(10, 30)) / 100;  // 10-30%;
 	return out;
 }
 
-rgbw_t highestRgb(rgbw_t a, rgbw_t b) {
-	if ((a.red+a.green+a.blue) > (b.red+b.green+b.blue)) {
-		return a;
-	}  else {
-		return b;
+float levelAtSegment(uint8_t pixel, uint8_t length, float segmentStart, float segmentRadius) {
+	float levelOut = 0.0;
+	// Convert segment values (0.0 to 1.0) to pixel value (if length is 6; 0.0 to 6.0)
+	segmentStart = segmentStart * length;
+	segmentRadius = segmentRadius * length;
+	float climbPerPixel = 1.0 / segmentRadius;
+	// Offset segment by a length to avoid calculating with modula and if-statements
+	float segmentMid = segmentStart + length;
+	float segmentFirst = segmentMid - segmentRadius;
+	float segmentLast = segmentMid + segmentRadius;
+	
+	// Test pixel if segment stretches before length, on length and after length
+	for (uint8_t i = 0; i < 3; i++) {
+		float level = 0.0;
+		float currentPixel = (i*length) + pixel;
+		if ((currentPixel >= segmentFirst) && (currentPixel <= segmentMid)) {
+			// Up fade
+			float diff = currentPixel - segmentFirst;
+			level = diff * climbPerPixel;
+		} else if ((currentPixel >= segmentMid) && (currentPixel <= segmentLast)) {
+			// Down fade
+			float diff = segmentLast - currentPixel;
+			level = diff * climbPerPixel;
+		}
+		if (level > levelOut) {
+			levelOut = level;
+		}
 	}
-}
-
-rgbw_t lowestRgb(rgbw_t a, rgbw_t b) {
-	if ((a.red+a.green+a.blue) < (b.red+b.green+b.blue)) {
-		return a;
-	}  else {
-		return b;
-	}
-}
-
-rgbw_t sumRgb(rgbw_t a, rgbw_t b) {
-	rgbw_t out;
-	out.red = max(a.red+b.red, 255);
-	out.green = max(a.green+b.green, 255);
-	out.blue = max(a.blue+b.blue, 255);
-	return out;
+	return levelOut;
 }
 
 void fire(rgbw_t *pixelbuffer, uint8_t start, uint8_t length, uint16_t fadetime) {
 	unsigned long now = millis();
 
-	// Reset to black pixels
+	// Go over all pixels
 	for (uint8_t i = 0; i < length; i++) {
+		// Reset to black pixels
 		pixelbuffer[start+i].color = 0;
-	}
 
-	// Go through fire segments and add them on top od LED buffer
-	for (uint32_t s = 0; s < (sizeof segments / sizeof segments[0]); s++) {
-		// If segment is over, generate a new one
-		if (now > (segments[s].msStart + segments[s].msLengthTemperature + segments[s].msLengthBlack)) {
-			segments[s] = randomFireSeg(length, fadetime);
-		}
-		
-		// Go over each pixel in segment
-		for (uint8_t p = 0; p < segments[s].pxLength; p++) {
-			uint8_t px = start + ((segments[s].pxStart + p) % length);
-			// Check if time is temperature or black part
-			rgbw_t newPixel;
+		// Go through fire segments and sum overlapping segments to current pixel
+		float currentHue = 0;
+		float currentLevel = 0;
+		for (uint32_t s = 0; s < (sizeof segments / sizeof segments[0]); s++) {
+			// If segment is over, generate a new one
+			if (now > (segments[s].msStart + segments[s].msLengthTemperature + segments[s].msLengthBlack)) {
+				segments[s] = randomFireSeg(fadetime);
+			}
+			uint16_t diff = now - segments[s].msStart;
+			
 			if (now < (segments[s].msStart + segments[s].msLengthTemperature)) {
 				// Temperature part
-				uint16_t diff = now - segments[s].msStart;
-				// Sweep hue towards red color over segments duration
-				float huePercent = 1.0 - (((float)diff) / ((float)segments[s].msLengthTemperature));
-				// Fade out segment at last 20% of duration
-				float lightnessPercent = 0.5;
-				if (huePercent < 0.20) {
-					lightnessPercent = lightnessPercent * (huePercent*5);
+				float hueSweepZero = 1.0 - (((float)diff) / ((float)segments[s].msLengthTemperature));  // 0.0-1.0 Sweep hue towards red color over segments duration
+				float segmentLevel = levelAtSegment(i, length, segments[s].segmentStart, segments[s].segmentRadius);  // 0.0-1.0 Level over segment
+
+				if (segmentLevel > 0) {
+					currentHue = segments[s].temperatureHue * hueSweepZero;
+					currentLevel = segmentLevel / 2;
 				}
-				// Add flicker???
-				newPixel = hslToRgb(0.0+(segments[s].temperatureHue*huePercent), 1.0, lightnessPercent);
 			} else {
 				// Black part
-				newPixel.color = 0;
+				currentHue = 0;
+				currentLevel = 0;
 			}
-			// pixelbuffer[px] = highestRgb(newPixel, pixelbuffer[px]);
-			pixelbuffer[px] = newPixel;
 		}
+		// Add flicker???
+		// Add remaining to white if hue is oversatureated???
+		rgbw_t newPixel;
+		newPixel = hslToRgb(currentHue, 1.0, currentLevel);
+		pixelbuffer[start+i] = newPixel;
 	}
 }
