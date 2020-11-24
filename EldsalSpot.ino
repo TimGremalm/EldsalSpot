@@ -2,7 +2,7 @@
 #include "effects.h"
 
 // The serial port is used for DMX transmit normally. If you want debug-print define USE_PRINT.
-#define USE_PRINT
+//#define USE_PRINT
 
 #include <Adafruit_NeoPixel.h>
 #ifndef USE_PRINT
@@ -201,7 +201,7 @@ void fillWs2812(rgbw_t *pixelbuffer) {
 		DMXSerial.write(spotDmxChannelStart+(spotDmxChannels*i)+spotDmxChannelGreen, pixelbuffer[i].green);
 		DMXSerial.write(spotDmxChannelStart+(spotDmxChannels*i)+spotDmxChannelBlue, pixelbuffer[i].blue);
 		DMXSerial.write(spotDmxChannelStart+(spotDmxChannels*i)+spotDmxChannelWhite, pixelbuffer[i].white);
-		DMXSerial.write(spotDmxChannelStart+(spotDmxChannels*i)+spotDmxChannelDimmer, 50);
+		DMXSerial.write(spotDmxChannelStart+(spotDmxChannels*i)+spotDmxChannelDimmer, 255*roofLevel);
 		DMXSerial.write(spotDmxChannelStart+(spotDmxChannels*i)+spotDmxChannelStrobe, 0);
 		#endif
 	}
