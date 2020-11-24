@@ -2,7 +2,7 @@
 #include "effects.h"
 
 // The serial port is used for DMX transmit normally. If you want debug-print define USE_PRINT.
-//#define USE_PRINT
+// #define USE_PRINT
 
 #include <Adafruit_NeoPixel.h>
 #ifndef USE_PRINT
@@ -146,38 +146,41 @@ void printMode(light_mode_t mode) {
 void tick() {
 	switch (roofMode) {
 		case LIGHT_START:
+		case LIGHT_FADE_WHITE:
+		case LIGHT_FADE_WHITE2:
+			white(grbwPixels, 0, roofNumberOfParcans);
+			break;
 		case LIGHT_FADE_RED:
-			fade(grbwPixels, 0, roofNumberOfParcans, 0.98, 0.03, 10000);
+			fade(grbwPixels, 0, roofNumberOfParcans, 0.98, 0.02, 10000);
 			break;
 		case LIGHT_FADE_MAGENTA:
-			fade(grbwPixels, 0, roofNumberOfParcans, 0.80, 0.10, 10000);
+			fade(grbwPixels, 0, roofNumberOfParcans, 0.79, 0.15, 10000);
 			break;
 		case LIGHT_FADE_BLUE:
-			fade(grbwPixels, 0, roofNumberOfParcans, 0.60, 0.05, 10000);
+			fade(grbwPixels, 0, roofNumberOfParcans, 0.55, 0.10, 10000);
 			break;
 		case LIGHT_FADE_CYAN:
-			fade(grbwPixels, 0, roofNumberOfParcans, 0.40, 0.10, 10000);
+			fade(grbwPixels, 0, roofNumberOfParcans, 0.45, 0.15, 7000);
 			break;
 		case LIGHT_FADE_GREEN:
-			fade(grbwPixels, 0, roofNumberOfParcans, 0.30, 0.05, 10000);
+			fade(grbwPixels, 0, roofNumberOfParcans, 0.27, 0.05, 6000);
 			break;
 		case LIGHT_FADE_YELLOW:
-			fade(grbwPixels, 0, roofNumberOfParcans, 0.10, 0.05, 10000);
+			fade(grbwPixels, 0, roofNumberOfParcans, 0.06, 0.05, 6000);
 			break;
 		case LIGHT_FADE_YELLOW_RED:
-			fade(grbwPixels, 0, roofNumberOfParcans, 0.00, 0.10, 10000);
+			fade(grbwPixels, 0, roofNumberOfParcans, 0.99, 0.06, 12000);
 			break;
 		case LIGHT_FADE_CYAN_YELLOW:
-			fade(grbwPixels, 0, roofNumberOfParcans, 0.85, 0.25, 10000);
+			fade(grbwPixels, 0, roofNumberOfParcans, 0.85, 0.25, 18000);
 			break;
 		case LIGHT_FADE_MAGENTA_BLUE:
-			fade(grbwPixels, 0, roofNumberOfParcans, 0.65, 0.25, 10000);
+			fade(grbwPixels, 0, roofNumberOfParcans, 0.65, 0.25, 16000);
 			break;
 		case LIGHT_FIRE_SLOW:
 		case LIGHT_FIRE_FAST:
 			fire(grbwPixels, 0, roofNumberOfParcans, 800);
 			break;
-		case LIGHT_FADE_WHITE:
 		case LIGHT_RAINBOW_SLOW:
 		case LIGHT_RAINBOW_FAST:
 		case LIGHT_POLKA:

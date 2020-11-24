@@ -20,6 +20,15 @@ void fade(rgbw_t *pixelbuffer, uint8_t start, uint8_t length, float hue, float r
 	}
 }
 
+void white(rgbw_t *pixelbuffer, uint8_t start, uint8_t length) {
+	rgbw_t newPixel;
+	newPixel = hslToRgb(0.10, 1.0, 0.1);
+	newPixel.white = 255;
+	for (uint32_t i = 0; i < length; i++) {
+		pixelbuffer[start+i] = newPixel;
+	}
+}
+
 typedef struct {
 	unsigned long msStart;
 	uint16_t msLengthTemperature;
