@@ -1,23 +1,23 @@
-#include <Adafruit_NeoPixel.h>
 #include "hsl_rgb.h"
 #include "effects.h"
 
 // The serial port is used for DMX transmit normally. If you want debug-print define USE_PRINT.
 #define USE_PRINT
 
+#include <Adafruit_NeoPixel.h>
 #ifndef USE_PRINT
-// #include <DMXSerial.h>
+#include <DMXSerial.h>
 #endif
 
 // Parcan channels
 const uint8_t spotDmxChannelStart = 1;
 const uint8_t spotDmxChannels = 6;
-const uint8_t spotDmxChannelRed = 1;
-const uint8_t spotDmxChannelGreen = 2;
-const uint8_t spotDmxChannelBlue = 3;
-const uint8_t spotDmxChannelWhite = 4;
-const uint8_t spotDmxChannelDimmer = 5;
-const uint8_t spotDmxChannelStrobe = 6;
+const uint8_t spotDmxChannelRed = 0;
+const uint8_t spotDmxChannelGreen = 1;
+const uint8_t spotDmxChannelBlue = 2;
+const uint8_t spotDmxChannelWhite = 3;
+const uint8_t spotDmxChannelDimmer = 4;
+const uint8_t spotDmxChannelStrobe = 5;
 
 // Number of par cans
 const uint8_t roofNumberOfParcans = 6;
@@ -25,7 +25,6 @@ const uint8_t spotsNumberOfSpots = 4;
 
 // Pixel buffer
 rgbw_t grbwPixels[roofNumberOfParcans + spotsNumberOfSpots];
-//rgbw_t grbwPixels[10];
 
 // 0-10V light control signals
 const int pinRoofLevel = A0;
@@ -46,13 +45,13 @@ light_mode_t spotsMode = LIGHT_START;
 Adafruit_NeoPixel pixels(roofNumberOfParcans+spotsNumberOfSpots, 3, NEO_GRB + NEO_KHZ800);
 
 void setup() {
+	pixels.begin();
 	#ifdef USE_PRINT
 	Serial.begin(115200);
 	Serial.println("Start EldsalSpot");
 	#else
 	DMXSerial.init(DMXController);
 	#endif
-	pixels.begin();
 	memset(grbwPixels, 0, sizeof(rgbw_t) * (roofNumberOfParcans + spotsNumberOfSpots));
 }
 
@@ -115,6 +114,7 @@ void checkLevels() {
 }
 
 void printMode(light_mode_t mode) {
+	#ifdef USE_PRINT
 	switch (mode) {
 		case LIGHT_START: Serial.print("LIGHT_START"); break;
 		case LIGHT_FADE_WHITE: Serial.print("LIGHT_FADE_WHITE"); break;
@@ -140,13 +140,10 @@ void printMode(light_mode_t mode) {
 		case LIGHT_PAR_FLASH_GREEN: Serial.print("LIGHT_PAR_FLASH_GREEN"); break;
 		case LIGHT_PAR_FLASH_YELLOW: Serial.print("LIGHT_PAR_FLASH_YELLOW"); break;
 	}	
+	#endif
 }
 
 void tick() {
-	#ifndef USE_PRINT
-	DMXSerial.write(1, smokeLevel);
-	#endif
-
 	switch (roofMode) {
 		case LIGHT_START:
 		case LIGHT_FADE_RED:
@@ -178,7 +175,7 @@ void tick() {
 			break;
 		case LIGHT_FIRE_SLOW:
 		case LIGHT_FIRE_FAST:
-			fire(grbwPixels, 0, roofNumberOfParcans, 900);
+			fire(grbwPixels, 0, roofNumberOfParcans, 800);
 			break;
 		case LIGHT_FADE_WHITE:
 		case LIGHT_RAINBOW_SLOW:
@@ -199,16 +196,15 @@ void tick() {
 void fillWs2812(rgbw_t *pixelbuffer) {
 	for (uint32_t i = 0; i < (roofNumberOfParcans + spotsNumberOfSpots); i++) {
 		pixels.setPixelColor(i, pixelbuffer[i].color);
-		/*
-		Serial.print(pixelbuffer[i].red);
-		Serial.print(",");
-		Serial.print(pixelbuffer[i].green);
-		Serial.print(",");
-		Serial.print(pixelbuffer[i].blue);
-		Serial.print(" ");
-		*/
+		#ifndef USE_PRINT
+		DMXSerial.write(spotDmxChannelStart+(spotDmxChannels*i)+spotDmxChannelRed, pixelbuffer[i].red);
+		DMXSerial.write(spotDmxChannelStart+(spotDmxChannels*i)+spotDmxChannelGreen, pixelbuffer[i].green);
+		DMXSerial.write(spotDmxChannelStart+(spotDmxChannels*i)+spotDmxChannelBlue, pixelbuffer[i].blue);
+		DMXSerial.write(spotDmxChannelStart+(spotDmxChannels*i)+spotDmxChannelWhite, pixelbuffer[i].white);
+		DMXSerial.write(spotDmxChannelStart+(spotDmxChannels*i)+spotDmxChannelDimmer, 50);
+		DMXSerial.write(spotDmxChannelStart+(spotDmxChannels*i)+spotDmxChannelStrobe, 0);
+		#endif
 	}
-	//Serial.println(" ");
 	pixels.show();
 }
 
