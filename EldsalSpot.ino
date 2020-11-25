@@ -178,8 +178,10 @@ void tick() {
 			fade(grbwPixels, 0, roofNumberOfParcans, 0.65, 0.25, 16000);
 			break;
 		case LIGHT_FIRE_SLOW:
+			fire(grbwPixels, 0, roofNumberOfParcans, 1300);
+			break;
 		case LIGHT_FIRE_FAST:
-			fire(grbwPixels, 0, roofNumberOfParcans, 800);
+			fire(grbwPixels, 0, roofNumberOfParcans, 600);
 			break;
 		case LIGHT_RAINBOW_SLOW:
 		case LIGHT_RAINBOW_FAST:

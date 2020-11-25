@@ -1,7 +1,6 @@
 #include "effects.h"
 #include "hsl_rgb.h"
 #include <Arduino.h>
-#include <math.h>
 
 void fade(rgbw_t *pixelbuffer, uint8_t start, uint8_t length, float hue, float range, uint16_t fadetime) {
 	unsigned long now = millis();
@@ -38,7 +37,7 @@ typedef struct {
 	float segmentRadius;
 } firesegment_t;
 
-firesegment_t segments[4];
+firesegment_t segments[5];
 
 uint16_t randomMinMax(uint16_t min, uint16_t max) {
 	return min + (rand() % (max+1-min));
@@ -47,11 +46,11 @@ uint16_t randomMinMax(uint16_t min, uint16_t max) {
 firesegment_t randomFireSeg(uint16_t fadetime) {
 	firesegment_t out;
 	out.msStart = millis();
-	out.msLengthTemperature = randomMinMax(300, fadetime);
-	out.msLengthBlack = randomMinMax(100, fadetime);
-	out.temperatureHue = ((float)randomMinMax(1, 7)) / 100;  // 1-7%
+	out.msLengthTemperature = randomMinMax((int)(fadetime*0.4), (int)(fadetime*1.2));
+	out.msLengthBlack = randomMinMax((int)(fadetime*0.0), (int)(fadetime*0.0));
+	out.temperatureHue = ((float)randomMinMax(0, 7)) / 100;  // 1-7%
 	out.segmentStart = ((float)randomMinMax(0, 100)) / 100;  // 0-100%;
-	out.segmentRadius = ((float)randomMinMax(10, 20)) / 100;  // 10-30%;
+	out.segmentRadius = ((float)randomMinMax(10, 30)) / 100;  // 10-30%;
 	return out;
 }
 
@@ -108,20 +107,18 @@ void fire(rgbw_t *pixelbuffer, uint8_t start, uint8_t length, uint16_t fadetime)
 				// Temperature part
 				float hueSweepZero = 1.0 - (((float)diff) / ((float)segments[s].msLengthTemperature));  // 0.0-1.0 Sweep hue towards red color over segments duration
 				float segmentLevel = levelAtSegment(i, length, segments[s].segmentStart, segments[s].segmentRadius);  // 0.0-1.0 Level over segment
-				float lastFade = 1.0;
+				float fadeAtEnd = 1.0;
 				if (hueSweepZero < 0.20) {
-					lastFade = hueSweepZero * 5;
+					fadeAtEnd = hueSweepZero * 5;
 				}
 
 				if (segmentLevel > 0) {
+					// Accumulate hue from all the segments 
 					currentHue = currentHue + (segments[s].temperatureHue * hueSweepZero);
-					// currentHue = segments[s].temperatureHue * hueSweepZero;
-					/*
-					if ((0.5 * segmentLevel * lastFade) > currentLevel) {
-						currentLevel = 0.5 * segmentLevel * lastFade;
+					if ((0.5 * segmentLevel * fadeAtEnd) > currentLevel) {
+						currentLevel = 0.5 * segmentLevel * fadeAtEnd;
 					}
-					*/
-					currentLevel = 0.5 * segmentLevel * lastFade;
+					//currentLevel = 0.5 * segmentLevel * fadeAtEnd;
 				}
 			} else {
 				// Black part
@@ -132,16 +129,19 @@ void fire(rgbw_t *pixelbuffer, uint8_t start, uint8_t length, uint16_t fadetime)
 		// Add flicker???
 		// Add remainder of hue to white if oversatureated
 		float white = 0;
-		float cutoff = 0.07;
+		float cutoff = 0.06;
+		float cutoff_white = 0.20;
 		if (currentHue > cutoff) {
-			white = fmod(currentHue, cutoff);
-			if (white > 0.20) {
-				white = 0.20;
+			white = currentHue - cutoff;
+			if (white > cutoff_white) {
+				white = cutoff_white;
 			}
 			currentHue = cutoff;
 		}
 		rgbw_t newPixel;
 		newPixel = hslToRgb(currentHue, 1.0, currentLevel);
+		newPixel.white = white;
+		newPixel.blue = 0;
 		pixelbuffer[start+i] = newPixel;
 	}
 }
