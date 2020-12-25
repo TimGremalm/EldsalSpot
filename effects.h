@@ -21,22 +21,23 @@ typedef enum {
 	LIGHT_FADE_MAGENTA_BLUE,
 	LIGHT_FIRE_SLOW,
 	LIGHT_FIRE_FAST,
-	LIGHT_RAINBOW_SLOW,
-	LIGHT_RAINBOW_FAST,
-	LIGHT_POLKA,
-	LIGHT_CANDY,
 	LIGHT_PAR_FLASH_RED,
 	LIGHT_PAR_FLASH_MAGENTA,
 	LIGHT_PAR_FLASH_BLUE,
 	LIGHT_PAR_FLASH_CYAN,
 	LIGHT_PAR_FLASH_GREEN,
 	LIGHT_PAR_FLASH_YELLOW,
+	LIGHT_POLKA,
+	LIGHT_CANDY,
+	LIGHT_RAINBOW_SLOW,
+	LIGHT_RAINBOW_FAST,
 	LIGHT_START = 255,
 } light_mode_t;
 
 void fade(rgbw_t *pixelbuffer, uint8_t start, uint8_t length, float hue, float range, uint16_t fadetime);
 void white(rgbw_t *pixelbuffer, uint8_t start, uint8_t length);
 void fire(rgbw_t *pixelbuffer, uint8_t start, uint8_t length, uint16_t fadetime);
+void flash(rgbw_t *pixelbuffer, uint8_t start, uint8_t length, float bpm, float beatMultiple, float fadePart, float pairOffset, float colorA, float colorB, float colorShiftBeat, float colorShiftAmount);
 
 #endif  // __EFFECTS__
 

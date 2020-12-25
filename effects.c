@@ -145,3 +145,52 @@ void fire(rgbw_t *pixelbuffer, uint8_t start, uint8_t length, uint16_t fadetime)
 		pixelbuffer[start+i] = newPixel;
 	}
 }
+
+float calcFade(float beatPart, float fadeLimitUp, float fadeLimitDown) {
+	float out;
+	if (beatPart <= fadeLimitUp) {
+		// First part; fade up
+		out = beatPart / fadeLimitUp;
+	} else if ((beatPart > fadeLimitUp) && (beatPart < fadeLimitDown)) {
+		// Second part; fade down
+		out = 1.0 - ((beatPart-fadeLimitUp) / fadeLimitUp);
+	} else {
+		// Black part
+		out = 0.0;
+	}
+	return out;
+}
+
+void flash(rgbw_t *pixelbuffer, uint8_t start, uint8_t length, float bpm, float beatMultiple, float fadePart, float pairOffset, float colorA, float colorB, float colorShiftBeat, float colorShiftAmount) {
+	unsigned long now = millis();
+	uint16_t beatMs = (1.0 / (bpm/60)) * 1000 * beatMultiple;
+	
+	float fadeLimitUp = beatMs * fadePart;
+	float fadeLimitDown = beatMs * (fadePart * 2);
+	
+	// Calculate fade for even pixels
+	float beatPart = now % beatMs; // Modulus beatMs to get beat
+	float fadeA = calcFade(beatPart, fadeLimitUp, fadeLimitDown);
+	
+	// Calculate fade for odd pixels
+	beatPart = ((int)(beatPart + (beatMs * pairOffset))) % beatMs; // Ofset beat for odd pixels
+	float fadeB = calcFade(beatPart, fadeLimitUp, fadeLimitDown);
+	
+	// Calculate color shift
+	float beatColorPart = now % (beatMs * (int)colorShiftBeat);
+	float beatColorLimitUp = beatMs * (int)colorShiftBeat;
+	float beatColorLimitDown = beatMs * (int)colorShiftBeat * 2;
+	float colorOffset = calcFade(beatColorPart, beatColorLimitUp, beatColorLimitDown);
+	colorOffset = colorOffset * colorShiftAmount;
+	
+	// Write color values
+	for (uint32_t i = 0; i < length; i++) {
+		if ((i % 2) == 0) {
+			// Even pixel
+			pixelbuffer[start+i] = hslToRgb(colorA+colorOffset, 1.0, fadeA/2);
+		} else {
+			// Odd pixel
+			pixelbuffer[start+i] = hslToRgb(colorB+colorOffset, 1.0, fadeB/2);
+		}
+	}
+}
