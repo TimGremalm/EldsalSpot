@@ -23,6 +23,8 @@ const uint8_t spotDmxChannelStrobe = 5;
 const uint8_t roofNumberOfParcans = 6;
 const uint8_t spotsNumberOfSpots = 4;
 
+const float fixedBpm = 123;
+
 // Pixel buffer
 rgbw_t grbwPixels[roofNumberOfParcans + spotsNumberOfSpots];
 
@@ -184,14 +186,14 @@ void lightProgramByMode(light_mode_t mode, uint8_t start, uint8_t length) {
 			fire(grbwPixels, start, length, 600);
 			break;
 		case LIGHT_PAR_FLASH_RED:
-			flash(grbwPixels, start, length, 123, 4, 0.25, 0.0, 0.0, 0.5, 2, 1.0);
+			flash(grbwPixels, start, length, fixedBpm, 4, 0.25, 0.0, 0.0, 0.5, 2, 1.0);
 			break;
 		case LIGHT_PAR_FLASH_MAGENTA:
 		case LIGHT_PAR_FLASH_BLUE:
 		case LIGHT_PAR_FLASH_CYAN:
 		case LIGHT_PAR_FLASH_GREEN:
 		case LIGHT_PAR_FLASH_YELLOW:
-			flash(grbwPixels, start, length, 123, 4, 0.25, 0.5, 0.0, 0.5, 1, 0);
+			flash(grbwPixels, start, length, fixedBpm, 4, 0.25, 0.5, 0.0, 0.5, 1, 0);
 			break;
 		case LIGHT_POLKA:
 		case LIGHT_CANDY:
@@ -215,7 +217,11 @@ void fillWs2812(rgbw_t *pixelbuffer) {
 		DMXSerial.write(spotDmxChannelStart+(spotDmxChannels*i)+spotDmxChannelGreen, pixelbuffer[i].green);
 		DMXSerial.write(spotDmxChannelStart+(spotDmxChannels*i)+spotDmxChannelBlue, pixelbuffer[i].blue);
 		DMXSerial.write(spotDmxChannelStart+(spotDmxChannels*i)+spotDmxChannelWhite, pixelbuffer[i].white);
-		DMXSerial.write(spotDmxChannelStart+(spotDmxChannels*i)+spotDmxChannelDimmer, 255*roofLevel);
+		if (i < roofNumberOfParcans) {
+			DMXSerial.write(spotDmxChannelStart+(spotDmxChannels*i)+spotDmxChannelDimmer, 255*roofLevel);
+		} else {
+			DMXSerial.write(spotDmxChannelStart+(spotDmxChannels*i)+spotDmxChannelDimmer, 255*spotsLevel);
+		}
 		DMXSerial.write(spotDmxChannelStart+(spotDmxChannels*i)+spotDmxChannelStrobe, 0);
 		#endif
 	}
