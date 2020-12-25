@@ -143,58 +143,67 @@ void printMode(light_mode_t mode) {
 	#endif
 }
 
-void tick() {
-	switch (roofMode) {
+void lightProgramByMode(light_mode_t mode, uint8_t start, uint8_t length) {
+	switch (mode) {
 		case LIGHT_START:
 		case LIGHT_FADE_WHITE:
 		case LIGHT_FADE_WHITE2:
-			white(grbwPixels, 0, roofNumberOfParcans);
+			white(grbwPixels, start, length);
 			break;
 		case LIGHT_FADE_RED:
-			fade(grbwPixels, 0, roofNumberOfParcans, 0.98, 0.02, 10000);
+			fade(grbwPixels, start, length, 0.98, 0.02, 10000);
 			break;
 		case LIGHT_FADE_MAGENTA:
-			fade(grbwPixels, 0, roofNumberOfParcans, 0.79, 0.15, 10000);
+			fade(grbwPixels, start, length, 0.79, 0.15, 10000);
 			break;
 		case LIGHT_FADE_BLUE:
-			fade(grbwPixels, 0, roofNumberOfParcans, 0.55, 0.10, 10000);
+			fade(grbwPixels, start, length, 0.55, 0.10, 10000);
 			break;
 		case LIGHT_FADE_CYAN:
-			fade(grbwPixels, 0, roofNumberOfParcans, 0.45, 0.15, 7000);
+			fade(grbwPixels, start, length, 0.45, 0.15, 7000);
 			break;
 		case LIGHT_FADE_GREEN:
-			fade(grbwPixels, 0, roofNumberOfParcans, 0.27, 0.05, 6000);
+			fade(grbwPixels, start, length, 0.27, 0.05, 6000);
 			break;
 		case LIGHT_FADE_YELLOW:
-			fade(grbwPixels, 0, roofNumberOfParcans, 0.06, 0.05, 6000);
+			fade(grbwPixels, start, length, 0.06, 0.05, 6000);
 			break;
 		case LIGHT_FADE_YELLOW_RED:
-			fade(grbwPixels, 0, roofNumberOfParcans, 0.99, 0.06, 12000);
+			fade(grbwPixels, start, length, 0.99, 0.06, 12000);
 			break;
 		case LIGHT_FADE_CYAN_YELLOW:
-			fade(grbwPixels, 0, roofNumberOfParcans, 0.85, 0.25, 18000);
+			fade(grbwPixels, start, length, 0.85, 0.25, 18000);
 			break;
 		case LIGHT_FADE_MAGENTA_BLUE:
-			fade(grbwPixels, 0, roofNumberOfParcans, 0.65, 0.25, 16000);
+			fade(grbwPixels, start, length, 0.65, 0.25, 16000);
 			break;
 		case LIGHT_FIRE_SLOW:
-			fire(grbwPixels, 0, roofNumberOfParcans, 1300);
+			fire(grbwPixels, start, length, 1300);
 			break;
 		case LIGHT_FIRE_FAST:
-			fire(grbwPixels, 0, roofNumberOfParcans, 600);
+			fire(grbwPixels, start, length, 600);
 			break;
-		case LIGHT_RAINBOW_SLOW:
-		case LIGHT_RAINBOW_FAST:
-		case LIGHT_POLKA:
-		case LIGHT_CANDY:
 		case LIGHT_PAR_FLASH_RED:
+			flash(grbwPixels, start, length, 123, 4, 0.25, 0.0, 0.0, 0.5, 2, 1.0);
+			break;
 		case LIGHT_PAR_FLASH_MAGENTA:
 		case LIGHT_PAR_FLASH_BLUE:
 		case LIGHT_PAR_FLASH_CYAN:
 		case LIGHT_PAR_FLASH_GREEN:
 		case LIGHT_PAR_FLASH_YELLOW:
+			flash(grbwPixels, start, length, 123, 4, 0.25, 0.5, 0.0, 0.5, 1, 0);
+			break;
+		case LIGHT_POLKA:
+		case LIGHT_CANDY:
+		case LIGHT_RAINBOW_SLOW:
+		case LIGHT_RAINBOW_FAST:
 			break;
 	}
+}
+
+void tick() {
+	lightProgramByMode(roofMode, 0, roofNumberOfParcans);
+	lightProgramByMode(spotsMode, roofNumberOfParcans, spotsNumberOfSpots);
 	fillWs2812(grbwPixels);
 }
 
