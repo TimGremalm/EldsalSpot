@@ -126,7 +126,6 @@ void fire(rgbw_t *pixelbuffer, uint8_t start, uint8_t length, uint16_t fadetime)
 				// currentLevel = 0;
 			}
 		}
-		// Add flicker???
 		// Add remainder of hue to white if oversatureated
 		float white = 0;
 		float cutoff = 0.06;
@@ -224,5 +223,17 @@ void sweepColors(rgbw_t *pixelbuffer, uint8_t start, uint8_t length, rgbw_t *col
 		pixelbuffer[start+i] = gradient_color(	colors[(currentColor+i+0) % numColors],
 												colors[(currentColor+i+1) % numColors],
 												current);
+	}
+}
+
+void rainbow(rgbw_t *pixelbuffer, uint8_t start, uint8_t length, uint16_t msPerSweep, float width) {
+	unsigned long now = millis();
+	float mscounter = now % msPerSweep;
+	float current = mscounter / msPerSweep;
+	float stepWidth = width / length;
+	for (uint8_t i = 0; i < length; i++) {
+		float icurrent = current + (i*stepWidth);
+		icurrent = ((float)(((uint16_t)(icurrent * 1000)) % 1000)) / 1000;
+		pixelbuffer[start+i] = hslToRgb(icurrent, 1.0, 0.5);
 	}
 }

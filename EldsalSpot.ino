@@ -212,7 +212,10 @@ void lightProgramByMode(light_mode_t mode, uint8_t start, uint8_t length) {
 			sweepColors(grbwPixels, start, length, candy, 4, 250);
 			break;
 		case LIGHT_RAINBOW_SLOW:
+			rainbow(grbwPixels, start, length, 5000, 1.0);
+			break;
 		case LIGHT_RAINBOW_FAST:
+			rainbow(grbwPixels, start, length, 2000, 0.3);
 			break;
 	}
 }
