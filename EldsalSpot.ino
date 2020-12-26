@@ -136,11 +136,11 @@ void printMode(light_mode_t mode) {
 		case LIGHT_FIRE_SLOW: Serial.print("LIGHT_FIRE_SLOW"); break;
 		case LIGHT_FIRE_FAST: Serial.print("LIGHT_FIRE_FAST"); break;
 		case LIGHT_PAR_FLASH_RED: Serial.print("LIGHT_PAR_FLASH_RED"); break;
-		case LIGHT_PAR_FLASH_MAGENTA: Serial.print("LIGHT_PAR_FLASH_MAGENTA"); break;
+		case LIGHT_PAR_FLASH_MAGENTA_BLUE_SLOW: Serial.print("LIGHT_PAR_FLASH_MAGENTA_BLUE_SLOW"); break;
 		case LIGHT_PAR_FLASH_BLUE: Serial.print("LIGHT_PAR_FLASH_BLUE"); break;
 		case LIGHT_PAR_FLASH_CYAN: Serial.print("LIGHT_PAR_FLASH_CYAN"); break;
 		case LIGHT_PAR_FLASH_GREEN: Serial.print("LIGHT_PAR_FLASH_GREEN"); break;
-		case LIGHT_PAR_FLASH_YELLOW: Serial.print("LIGHT_PAR_FLASH_YELLOW"); break;
+		case LIGHT_PAR_FLASH_RAINBOW: Serial.print("LIGHT_PAR_FLASH_RAINBOW"); break;
 	}	
 	#endif
 }
@@ -179,22 +179,6 @@ void lightProgramByMode(light_mode_t mode, uint8_t start, uint8_t length) {
 		case LIGHT_FADE_MAGENTA_BLUE:
 			fade(grbwPixels, start, length, 0.65, 0.25, 16000);
 			break;
-		case LIGHT_FIRE_SLOW:
-			fire(grbwPixels, start, length, 1300);
-			break;
-		case LIGHT_FIRE_FAST:
-			fire(grbwPixels, start, length, 600);
-			break;
-		case LIGHT_PAR_FLASH_RED:
-			flash(grbwPixels, start, length, fixedBpm, 4, 0.25, 0.0, 0.0, 0.5, 2, 1.0);
-			break;
-		case LIGHT_PAR_FLASH_MAGENTA:
-		case LIGHT_PAR_FLASH_BLUE:
-		case LIGHT_PAR_FLASH_CYAN:
-		case LIGHT_PAR_FLASH_GREEN:
-		case LIGHT_PAR_FLASH_YELLOW:
-			flash(grbwPixels, start, length, fixedBpm, 4, 0.25, 0.5, 0.0, 0.5, 1, 0);
-			break;
 		case LIGHT_POLKA:
 			rgbw_t polka[4];
 			polka[0].color = 0x00FF0000;
@@ -216,6 +200,36 @@ void lightProgramByMode(light_mode_t mode, uint8_t start, uint8_t length) {
 			break;
 		case LIGHT_RAINBOW_FAST:
 			rainbow(grbwPixels, start, length, 2000, 0.3);
+			break;
+		case LIGHT_FIRE_SLOW:
+			fire(grbwPixels, start, length, 1300);
+			break;
+		case LIGHT_FIRE_FAST:
+			fire(grbwPixels, start, length, 600);
+			break;
+		case LIGHT_PAR_FLASH_RED:
+			flash(grbwPixels, start, length, fixedBpm, 4, 0.25, 0.5, 0.0, 0.01, 1, 0);
+			break;
+		case LIGHT_PAR_FLASH_RED_DOUBLE:
+			flash(grbwPixels, start, length, fixedBpm, 4, 0.25, 0.0, 0.0, 0.01, 1, 0);
+			break;
+		case LIGHT_PAR_FLASH_GREEN:
+			flash(grbwPixels, start, length, fixedBpm, 4, 0.25, 0.5, 0.3, 0.4, 1, 0);
+			break;
+		case LIGHT_PAR_FLASH_BLUE:
+			flash(grbwPixels, start, length, fixedBpm, 4, 0.25, 0.5, 0.6, 0.7, 1, 0);
+			break;
+		case LIGHT_PAR_FLASH_CYAN:
+			flash(grbwPixels, start, length, fixedBpm, 4, 0.25, 0.5, 0.8, 0.9, 1, 0);
+			break;
+		case LIGHT_PAR_FLASH_CYAN_DOUBLE:
+			flash(grbwPixels, start, length, fixedBpm, 4, 0.25, 0.0, 0.8, 0.9, 1, 0);
+			break;
+		case LIGHT_PAR_FLASH_RAINBOW:
+			flash(grbwPixels, start, length, fixedBpm, 4, 0.45, 0.5, 0.0, 0.5, 3, 1);
+			break;
+		case LIGHT_PAR_FLASH_MAGENTA_BLUE_SLOW:
+			flash(grbwPixels, start, length, fixedBpm, 8, 0.125, 0.5, 0.6, 0.8, 2, 0.2);
 			break;
 	}
 }
