@@ -37,7 +37,7 @@ const int pinSpotsMode = A3;
 // Mode parameters
 const uint16_t modeSteps = 24;
 const uint16_t modeStep = 1024 / modeSteps;
-const uint16_t modeDiffLatch = modeStep / 2;
+const uint16_t modeDiffLatch = modeStep / 3;
 
 float roofLevel = 0;
 float spotsLevel = 0;
@@ -67,7 +67,7 @@ void checkLevels() {
 	// Base mode of analog value
 	if ((light_mode_t)(analogRoofMode / modeStep) != roofMode) {
 		// Make sure we have stretched far enough in to the new mode
-		if (analogRoofMode > ((roofMode * (uint16_t)modeStep) + (modeDiffLatch * 3))) {
+		if (analogRoofMode > ((roofMode * (uint16_t)modeStep) + (modeDiffLatch * 1))) {
 			roofMode = (light_mode_t)(analogRoofMode / (uint16_t)modeStep);
 			#ifdef USE_PRINT
 			Serial.print("Roof new mode up ");
@@ -92,7 +92,7 @@ void checkLevels() {
 	// Base mode of analog value
 	if ((light_mode_t)(analogSpotsMode / modeStep) != spotsMode) {
 		// Make sure we have stretched far enough in to the new mode
-		if (analogSpotsMode > ((spotsMode * (uint16_t)modeStep) + (modeDiffLatch * 3))) {
+		if (analogSpotsMode > ((spotsMode * (uint16_t)modeStep) + (modeDiffLatch * 1))) {
 			spotsMode = (light_mode_t)(analogSpotsMode / (uint16_t)modeStep);
 			#ifdef USE_PRINT
 			Serial.print("Spots new mode up ");
