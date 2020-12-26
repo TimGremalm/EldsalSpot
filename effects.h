@@ -38,6 +38,7 @@ void fade(rgbw_t *pixelbuffer, uint8_t start, uint8_t length, float hue, float r
 void white(rgbw_t *pixelbuffer, uint8_t start, uint8_t length);
 void fire(rgbw_t *pixelbuffer, uint8_t start, uint8_t length, uint16_t fadetime);
 void flash(rgbw_t *pixelbuffer, uint8_t start, uint8_t length, float bpm, float beatMultiple, float fadePart, float pairOffset, float colorA, float colorB, float colorShiftBeat, float colorShiftAmount);
+void sweepColors(rgbw_t *pixelbuffer, uint8_t start, uint8_t length, rgbw_t *colors, uint8_t numColors, uint16_t msPerColor);
 
 #endif  // __EFFECTS__
 

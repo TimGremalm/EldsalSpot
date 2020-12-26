@@ -194,3 +194,35 @@ void flash(rgbw_t *pixelbuffer, uint8_t start, uint8_t length, float bpm, float 
 		}
 	}
 }
+
+uint8_t gradient(uint8_t colorA, uint8_t colorB, float progress) {
+	uint8_t diff;
+	if (colorA > colorB) {
+		diff = colorA - colorB;
+		return colorB + (uint8_t)((1.0 - progress) * diff);
+	} else {
+		diff = colorB - colorA;
+		return colorA + (uint8_t)(progress * diff);
+	}
+}
+
+rgbw_t gradient_color(rgbw_t colorA, rgbw_t colorB, float progress) {
+	rgbw_t out;
+	out.red = gradient(colorA.red, colorB.red, progress);
+	out.green = gradient(colorA.green, colorB.green, progress);
+	out.blue = gradient(colorA.blue, colorB.blue, progress);
+	out.white = gradient(colorA.white, colorB.white, progress);
+	return out;
+}
+
+void sweepColors(rgbw_t *pixelbuffer, uint8_t start, uint8_t length, rgbw_t *colors, uint8_t numColors, uint16_t msPerColor) {
+	unsigned long now = millis();
+	float mscounter = now % (numColors * msPerColor);
+	uint8_t currentColor = mscounter / msPerColor;
+	float current = (mscounter - (currentColor * msPerColor)) / msPerColor;
+	for (uint8_t i = 0; i < length; i++) {
+		pixelbuffer[start+i] = gradient_color(	colors[(currentColor+i+0) % numColors],
+												colors[(currentColor+i+1) % numColors],
+												current);
+	}
+}

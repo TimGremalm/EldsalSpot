@@ -196,7 +196,21 @@ void lightProgramByMode(light_mode_t mode, uint8_t start, uint8_t length) {
 			flash(grbwPixels, start, length, fixedBpm, 4, 0.25, 0.5, 0.0, 0.5, 1, 0);
 			break;
 		case LIGHT_POLKA:
+			rgbw_t polka[4];
+			polka[0].color = 0x00FF0000;
+			polka[1].color = 0x00FF0000;
+			polka[2].color = 0x99000000;
+			polka[3].color = 0x99000000;
+			sweepColors(grbwPixels, start, length, polka, 4, 500);
+			break;
 		case LIGHT_CANDY:
+			rgbw_t candy[4];
+			candy[0].color = 0x00FF0000;
+			candy[1].color = 0x00FFFF00;
+			candy[2].color = 0x0000FFFF;
+			candy[3].color = 0x00FF00FF;
+			sweepColors(grbwPixels, start, length, candy, 4, 250);
+			break;
 		case LIGHT_RAINBOW_SLOW:
 		case LIGHT_RAINBOW_FAST:
 			break;
