@@ -208,10 +208,10 @@ void lightProgramByMode(light_mode_t mode, uint8_t start, uint8_t length) {
 			fire(grbwPixels, start, length, 600);
 			break;
 		case LIGHT_PAR_FLASH_RED:
-			flash(grbwPixels, start, length, fixedBpm, 4, 0.25, 0.5, 0.0, 0.01, 1, 0);
+			flash(grbwPixels, start, length, fixedBpm, 4, 0.25, 0.5, 0.0, 0.0, 1, 0);
 			break;
 		case LIGHT_PAR_FLASH_RED_DOUBLE:
-			flash(grbwPixels, start, length, fixedBpm, 4, 0.25, 0.0, 0.0, 0.01, 1, 0);
+			flash(grbwPixels, start, length, fixedBpm, 4, 0.25, 0.0, 0.0, 0.0, 1, 0);
 			break;
 		case LIGHT_PAR_FLASH_GREEN:
 			flash(grbwPixels, start, length, fixedBpm, 4, 0.25, 0.5, 0.3, 0.4, 1, 0);
